@@ -1,6 +1,6 @@
 <script lang="ts" type="module">
   import { onMount } from "svelte";
-  import { Type, Icon, IconForward, IconSpinner } from "figma-plugin-ds-svelte";
+  import { Type, Icon, IconForward, IconSpinner, Button } from "figma-plugin-ds-svelte";
   import JSZip from "../../node_modules/jszip/dist/jszip.min.js";
   import { store } from "store";
   import { delay, log, generateDateAndTime } from "utils";
@@ -189,10 +189,10 @@
       class={"flex flex-1 flex-row items-center justify-between pl-4 pr-2 pointer-events-none " +
         (exportButtonDisabled ? "opacity-50 hover:opacity-60" : "opacity-80 hover:opacity-100")}
     >
-      <Type weight="bold">
+      <Button purpose="submit" variant="secondary" weight="bold" >
         {exportLoading ? `Please wait, exporting ${nodeCount} images...` : `Export ${nodeCount} images`}
-      </Type>
-      <Icon iconName={exportLoading ? IconSpinner : IconForward} spin={exportLoading ? true : false}/>
+        <Icon iconName={exportLoading ? IconSpinner : IconForward} spin={exportLoading ? true : false}/>
+      </Button>
     </div>
   </div>
 </div>

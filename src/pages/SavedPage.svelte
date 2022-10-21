@@ -64,9 +64,9 @@
     <div class="section">
       <div class="flex flex-row gap-2 justify-between">
         <div class="flex flex-col">
-          <Section>Saved configurations</Section>
+          <Section>Configuration presets</Section>
           <div class="section-subtitle">
-            <Type>Add a new configuration or rename an existing one.</Type>
+            <Type>Add a new configuration preset or rename an existing one.</Type>
           </div>
         </div>
         <div class="flex items-start" on:click={() => onSelectAdd()}>

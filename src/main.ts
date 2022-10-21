@@ -275,7 +275,7 @@ const getExportPayload = async (
         // fileNameTextNode.characters = data;
 
         // console.log("BUGBUG", baseExportConfig)
-        console.log("BUGBUG", asset)
+        // console.log("BUGBUG", asset)
         // don't add the scale suffix in case of not checkbox unchecked, SVG or PDF files (which have no scale)
         if (!baseExportConfig.suffix || baseExportConfig.extension === "SVG" || baseExportConfig.extension === "PDF" ) {
           asset.filename = data;
@@ -287,7 +287,7 @@ const getExportPayload = async (
         // console.log("BUGBUG", asset.filename)
       }
     } else {
-      let error = "ERROR: Found more than one node called #Filename in this element: " + e.parentName
+      let error = "ERROR: Please make sure this node has exactly one child node called #Filename: " + e.parentName;
       console.error(error);
       figma.closePlugin(error);
       return;

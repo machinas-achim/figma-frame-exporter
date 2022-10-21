@@ -3,7 +3,7 @@ export type Store = {
   configs: Record<string, Config>;
 };
 
-export type Page = "configure" | "saved";
+export type Page = "configuration" | "presets";
 
 export type Connectors = {
   before: string;

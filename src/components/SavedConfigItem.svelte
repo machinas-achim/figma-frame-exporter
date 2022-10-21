@@ -1,5 +1,5 @@
 <script lang="ts" type="module">
-  import { Type, Icon, Input, IconCheck, IconMinus } from "figma-plugin-ds-svelte";
+  import { Type, Icon, Input, IconCheck, IconMinus, Button } from "figma-plugin-ds-svelte";
   import { toSentenceCase } from "js-convert-case";
   import { Config } from "types";
 
@@ -39,7 +39,7 @@
   }
 </script>
 
-<div class={"flex flex-row space-x-2 " + (isActive ? "outline outline-offset-4 outline-2 rounded-lg outline-green-800" : "")}>
+<div class={"flex flex-row space-x-2 " + (isActive ? "outline outline-offset-4 outline-2 rounded-lg outline-green-900 bg-green-900/20" : "")}>
   <div class="flex flex-1 flex-col gap-1">
     <div class="flex flex-1 flex-col gap-2">
       {#if !isEditingName}
@@ -77,27 +77,27 @@
         {/each}
       </div>
       <div class="flex flex-row space-x-2">
-        <Type>
+        <Button disabled={isActive} purpose="submit" variant="secondary">
           <div
-            class={"flex w-fit cursor-pointer " + (isActive ? "text-green-800" : "text-gray-400")}
+            class={"flex w-fit cursor-pointer " + (isActive ? "text-green-900" : "")}
             on:click={onSelectActivate}
           >
             {isActive ? "Active" : "Activate"}
           </div>
-        </Type>
-        <Type>
+        </Button>
+        <Button purpose="submit" variant="secondary">
           <div
-            class={"flex w-fit text-gray-400 cursor-pointer"}
+            class={"flex w-fit  cursor-pointer"}
             on:click={() => (isEditingName = true)}
           >
             Edit name
           </div>
-        </Type>
-        <Type>
-          <div class={"flex w-fit text-gray-400 cursor-pointer"} on:click={onSelectDuplicate}>
+        </Button>
+        <Button purpose="submit" variant="secondary">
+          <div class={"flex w-fit  cursor-pointer"} on:click={onSelectDuplicate}>
             Duplicate
           </div>
-        </Type>
+        </Button>
       </div>
     </div>
   </div>

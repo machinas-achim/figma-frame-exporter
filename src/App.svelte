@@ -32,7 +32,7 @@
     }
   };
 
-  let currentPage: Page = "configure";
+  let currentPage: Page = "configuration";
 </script>
 
 <div class="flex flex-1 flex-col h-[900] overflow-hidden">
@@ -41,9 +41,9 @@
 
   {#if $store}
     <div class="flex flex-1 overflow-y-hidden">
-      {#if currentPage === "configure"}
+      {#if currentPage === "configuration"}
         <ConfigurePage />
-      {:else if currentPage === "saved"}
+      {:else if currentPage === "presets"}
         <SavedPage />
       {/if}
     </div>

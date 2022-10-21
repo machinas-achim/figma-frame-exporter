@@ -1,9 +1,9 @@
 <script lang="ts" type="module">
-  import { Section, SelectMenu, Input } from "figma-plugin-ds-svelte";
+  import { Section, SelectMenu, Input, Checkbox } from "figma-plugin-ds-svelte";
   import { ExtensionOption, ImageConfig } from "types";
 
   export let imageConfig: ImageConfig;
-  export let onChange: (iomageConfig: ImageConfig) => void;
+  export let onChange: (imageConfig: ImageConfig) => void;
 
   let extensionOptions: ExtensionOption[] = [
     { value: "PNG", label: "PNG", group: null, selected: false },
@@ -29,7 +29,7 @@
       <Input
         type="text"
         placeholder="E.g. 2x, 64w, 200h"
-        disabled={!imageConfig.extension || imageConfig.extension === "SVG"}
+        disabled={!imageConfig.extension || imageConfig.extension === "SVG" || imageConfig.extension === "PDF"}
         bind:value={imageConfig.sizeConstraint}
         on:input={(e) => {
           imageConfig.sizeConstraint = e.target["value"];
@@ -47,5 +47,16 @@
         }}
       />
     </div>
+  </div>
+  <div class="flex flex-row">
+    <Checkbox
+    disabled={!imageConfig.extension || imageConfig.extension === "SVG" || imageConfig.extension === "PDF"}
+    bind:checked={imageConfig.suffix}
+    on:change={(e) => {
+        _onChangeConfig();
+    }}
+    >
+      Add a scale suffix to the filename
+    </Checkbox>
   </div>
 </div>

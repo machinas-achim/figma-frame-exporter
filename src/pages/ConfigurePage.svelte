@@ -1,9 +1,9 @@
 <script lang="ts" type="module">
   import { onMount } from "svelte";
-  import { Type, Icon, IconForward } from "figma-plugin-ds-svelte";
+  import { Type, Icon, IconForward, IconSpinner } from "figma-plugin-ds-svelte";
   import JSZip from "../../node_modules/jszip/dist/jszip.min.js";
   import { store } from "store";
-  import { delay, log } from "utils";
+  import { delay, log, generateDateAndTime } from "utils";
   import { Asset, Config, ExportPayload, LayerModMatches } from "types";
   import Divider from "../components/Divider.svelte";
   import SelectedConfigOptions from "../components/SelectedConfigOptions.svelte";
@@ -105,7 +105,7 @@
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "Export.zip";
+    link.download = `machinas-export-${generateDateAndTime()}.zip`
     link.click();
   };
 </script>
@@ -179,7 +179,7 @@
   </div>
 
   <div
-    class="flex flex-col justify-center w-full h-16 bg-white cursor-pointer"
+    class="flex flex-col justify-center w-full h-16 cursor-pointer"
     disabled={exportButtonDisabled}
     on:click={onSelectExport}
   >
@@ -190,9 +190,9 @@
         (exportButtonDisabled ? "opacity-50 hover:opacity-60" : "opacity-80 hover:opacity-100")}
     >
       <Type weight="bold">
-        {exportLoading ? "Generating export..." : `Export ${nodeCount} images`}
+        {exportLoading ? `Please wait, exporting ${nodeCount} images...` : `Export ${nodeCount} images`}
       </Type>
-      <Icon iconName={IconForward} />
+      <Icon iconName={exportLoading ? IconSpinner : IconForward} spin={exportLoading ? true : false}/>
     </div>
   </div>
 </div>

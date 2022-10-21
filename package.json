@@ -2,8 +2,8 @@
   "name": "frame-exporter",
   "description": "Export images and variants with configurable filenames",
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build": "mkdir -p build && rollup -c",
+    "dev": "mkdir -p build && rollup -c -w",
     "start": "sirv build",
     "clean": "rm -rf node_modules package-lock.json build && npm install"
   },
@@ -21,7 +21,8 @@
     "cssnano": "5.1.13",
     "figma-plugin-ds": "1.0.1",
     "figma-plugin-ds-svelte": "github:naftalibeder/figma-plugin-ds-svelte#fix/select-menu-clip",
-    "rollup": "2.78.0",
+    "postcss": "8.4.16",
+    "rollup": "^2.78.0",
     "rollup-plugin-html-bundle": "0.0.3",
     "rollup-plugin-livereload": "2.0.5",
     "rollup-plugin-postcss": "4.0.2",
@@ -31,10 +32,9 @@
     "sirv-cli": "2.0.2",
     "svelte": "3.49.0",
     "svelte-preprocess": "4.10.7",
+    "tailwindcss": "3.1.8",
     "tslib": "2.4.0",
-    "typescript": "4.7.4",
-    "postcss": "8.4.16",
-    "tailwindcss": "3.1.8"
+    "typescript": "4.7.4"
   },
   "dependencies": {
     "js-convert-case": "4.2.0",

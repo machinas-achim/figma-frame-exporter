@@ -52,6 +52,7 @@ export interface NameConfig {
 export interface ImageConfig {
   sizeConstraint: string;
   extension: Extension;
+  suffix: boolean;
 }
 
 export interface LayerModConfig {

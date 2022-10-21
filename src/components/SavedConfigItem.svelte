@@ -19,6 +19,7 @@
       `${toSentenceCase(config.casing)} casing`,
       `${config.syntax}`,
       config.sizeConstraint,
+      config.suffix,
     ];
 
     if (config.layerMods.length > 0) {
@@ -38,7 +39,7 @@
   }
 </script>
 
-<div class="flex flex-row space-x-2">
+<div class={"flex flex-row space-x-2 " + (isActive ? "outline outline-offset-4 outline-2 rounded-lg outline-green-800" : "")}>
   <div class="flex flex-1 flex-col gap-1">
     <div class="flex flex-1 flex-col gap-2">
       {#if !isEditingName}
@@ -78,7 +79,7 @@
       <div class="flex flex-row space-x-2">
         <Type>
           <div
-            class={"flex w-fit cursor-pointer " + (isActive ? "text-blue-400" : "text-gray-400")}
+            class={"flex w-fit cursor-pointer " + (isActive ? "text-green-800" : "text-gray-400")}
             on:click={onSelectActivate}
           >
             {isActive ? "Active" : "Activate"}

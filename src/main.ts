@@ -69,7 +69,7 @@ class TempFrame {
     }
 
     this.frame = figma.createFrame();
-    this.frame.name = "[Frame Exporter]";
+    this.frame.name = "[Machinas Frame Exporter]";
     this.frame.clipsContent = false;
     this.frame = this.frame;
   };
@@ -108,7 +108,7 @@ const getExportables = (): Exportable[] => {
           size: { width: child.width, height: child.height },
         });
       }
-    } else if (node.type === "FRAME" || node.type === "COMPONENT" || node.type === "GROUP") {
+    } else if (node.type === "FRAME" || node.type === "COMPONENT" || node.type === "GROUP" || node.type === "INSTANCE") {
       exportables.push({
         id: node.id,
         parentName: node.name,
@@ -126,7 +126,7 @@ const getExportPayload = async (
   config: Config,
   previewSettings: PreviewSettings
 ): Promise<ExportPayload> => {
-  const { syntax, connectors, casing, extension, sizeConstraint, layerMods } = config;
+  const { syntax, connectors, casing, extension, sizeConstraint, suffix, layerMods } = config;
 
   tempFrame.create();
 
@@ -138,6 +138,7 @@ const getExportPayload = async (
   }
 
   let assets: Asset[] = [];
+  let fileNameArray: string[] = [];
 
   for (const e of exportables) {
     const asset: Asset = {
@@ -184,6 +185,8 @@ const getExportPayload = async (
     }
 
     // Build full filename.
+    // this is the original code that we keep for fallback reasons 
+    // in case no dedicated #Filename textnode is associated with the frame!
     const filename = syntax
       .replace("$F", withCasing(e.parentName, casing))
       .replace("$V", variantsStr);
@@ -193,6 +196,7 @@ const getExportPayload = async (
     const baseExportConfig = {
       extension,
       constraint: sizeConstraint,
+      suffix: suffix,
       srcSize: e.size,
     };
     let settings: ExportSettings;
@@ -205,6 +209,7 @@ const getExportPayload = async (
       const payload = buildExportSettings({
         extension: "PNG",
         constraint: "",
+        suffix: true,
         srcSize: previewSettings.thumbSize,
       });
       settings = payload.settings;
@@ -216,6 +221,77 @@ const getExportPayload = async (
       log(e);
       continue;
     }
+
+    // Find all textnodes that have our special name #Filename
+    const fileNames = node.findAll(n => n.name === "#Filename" && n.type === "TEXT")
+    // console.log("fileNames", fileNames);
+    // console.log("fileNames.length", fileNames.length);
+    if (fileNames.length == 1) {
+      let fileNameTextNode = fileNames[0] as TextNode;
+      // there should only be one node called #Filename, use its contents ("characters") to generate filename
+      if (fileNameTextNode.type === "TEXT") {
+        let data = fileNameTextNode.characters as string;
+        if (typeof data === "string" && data.trim().length == 0) {
+          // It is an empty string
+          console.log("fileNameTextNode.characters empty, using filename as fallback")
+          data=filename;
+        } else {
+          // console.log("data was set to ", data);
+        }
+
+        // Find first free filename if the current one exists already (e.g. duplicate elements)
+        let nameExists = true;
+        let i = 0;
+        let tmpFileName="";
+        while (nameExists) {
+          if (i==0) {
+            tmpFileName = data;
+          } else if (i==1) {
+            tmpFileName = data + " copy";
+          } else {
+            tmpFileName = data + " copy " + i;
+          }
+          if (!(fileNameArray.includes(tmpFileName))) {
+            nameExists = false;
+            data = tmpFileName;
+          }
+          i++;
+          //console.log ("counter " + i);
+          //console.log ("tmpFileName " + tmpFileName);
+          //console.log ("data " + data);
+        }
+
+        fileNameArray.push(data);
+        // console.log("Pushed filename " + data);
+
+        // The important thing with text is that changing the content of a text node 
+        // requires its font to be loaded and that fonts are not always available. 
+        // https://www.figma.com/plugin-docs/working-with-text/#loading-fonts
+        await Promise.all(
+          fileNameTextNode.getRangeAllFontNames(0, fileNameTextNode.characters.length)
+            .map(figma.loadFontAsync)
+        )
+        // BUGBUG if we rename the nodes with every export, we cause long chains of modifiers
+        // fileNameTextNode.characters = data;
+
+        // console.log("BUGBUG", baseExportConfig)
+        console.log("BUGBUG", asset)
+        // don't add the scale suffix in case of not checkbox unchecked, SVG or PDF files (which have no scale)
+        if (!baseExportConfig.suffix || baseExportConfig.extension === "SVG" || baseExportConfig.extension === "PDF" ) {
+          asset.filename = data;
+        } else {
+            // for now we can't dimensions because they fine at preview, BUT undefined at export!
+            // asset.filename = data + "@" + baseExportConfig.constraint + "-" + asset.size.width + "x" + asset.size.height;
+            asset.filename = data + "@" + baseExportConfig.constraint;
+        }
+        // console.log("BUGBUG", asset.filename)
+      }
+    } else {
+      let error = "ERROR: Found more than one node called #Filename in this element: " + e.parentName
+      console.error(error);
+      figma.closePlugin(error);
+      return;
+    }    
 
     assets.push(asset);
   }

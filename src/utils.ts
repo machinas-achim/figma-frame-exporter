@@ -27,9 +27,10 @@ export const withCasing = (value: string, casing: Casing): string => {
 export const buildExportSettings = (config: {
   extension: Extension;
   constraint: string;
+  suffix: boolean,
   srcSize: Size;
 }): { settings: ExportSettings; destSize?: Size } => {
-  const { extension, constraint, srcSize } = config;
+  const { extension, constraint, suffix, srcSize } = config;
 
   if (extension === "SVG" || extension === "PDF") {
     return {
@@ -86,6 +87,18 @@ export const buildExportSettings = (config: {
   }
 };
 
+export const generateDateAndTime = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  const second = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day}T${hour}-${minute}-${second}`;
+};
+
 export const buildDefaultConfig = (): Config => {
   return {
     id: `${Math.random()}`,
@@ -99,6 +112,7 @@ export const buildDefaultConfig = (): Config => {
     casing: "original",
     sizeConstraint: "2x",
     extension: "PNG",
+    suffix: true,
     layerMods: [
       // {
       //   id: `${Math.random()}`,
@@ -113,7 +127,7 @@ export const buildDefaultConfig = (): Config => {
 export const delay = async (ms: number) => await new Promise((res) => setTimeout(res, ms));
 
 export const log = (...args: any[]) => {
-  console.log("[Frame Exporter]", ...args);
+  console.log("[Machinas Frame Exporter]", ...args);
 };
 
 export default {};

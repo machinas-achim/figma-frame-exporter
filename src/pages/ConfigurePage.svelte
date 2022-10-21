@@ -18,6 +18,9 @@
   let layerModMatches: LayerModMatches = {};
   let exampleAssets: Asset[] = [];
   let exportLoading = false;
+  let plural = "";
+  let imageLabel = "images";
+
   $: exportButtonDisabled = nodeCount === 0 || exportLoading;
 
   onMount(() => {
@@ -41,6 +44,8 @@
       nodeCount = exportPayload.nodeCount;
       layerModMatches = exportPayload.layerModMatches;
       exampleAssets = await buildPreviewImages(exportPayload.assets);
+      plural = nodeCount === 1 ? "" : "s";
+      imageLabel=(`image${plural}`);
     } else if (type === "EXPORT") {
       const exportPayload = message.exportPayload as ExportPayload;
       await presentDownloadableArchive(exportPayload.assets);
@@ -108,6 +113,7 @@
     link.download = `machinas-export-${generateDateAndTime()}.zip`
     link.click();
   };
+
 </script>
 
 <div class="flex flex-1 flex-col overflow-y-hidden">
@@ -189,8 +195,8 @@
       class={"flex flex-1 flex-row items-center justify-between pl-4 pr-2 pointer-events-none " +
         (exportButtonDisabled ? "opacity-50 hover:opacity-60" : "opacity-80 hover:opacity-100")}
     >
-      <Button purpose="submit" variant="secondary" weight="bold" >
-        {exportLoading ? `Please wait, exporting ${nodeCount} images...` : `Export ${nodeCount} images`}
+      <Button variant="secondary" weight="bold" >
+        {exportLoading ? `Please wait, exporting ${nodeCount} ${imageLabel}...` : `Export ${nodeCount} ${imageLabel}`}
         <Icon iconName={exportLoading ? IconSpinner : IconForward} spin={exportLoading ? true : false}/>
       </Button>
     </div>

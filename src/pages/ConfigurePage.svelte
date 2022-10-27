@@ -4,13 +4,14 @@
   import JSZip from "../../node_modules/jszip/dist/jszip.min.js";
   import { store } from "store";
   import { delay, log, generateDateAndTime } from "utils";
-  import { Asset, Config, ExportPayload, LayerModMatches } from "types";
+  import { Asset, Config, ExportPayload, LayerModMatches, PluginFormatTypes, } from "types";
   import Divider from "../components/Divider.svelte";
   import SelectedConfigOptions from "../components/SelectedConfigOptions.svelte";
   import NameOptions from "../components/NameOptions.svelte";
   import ImageOptions from "../components/ImageOptions.svelte";
   import LayerModList from "../components/LayerModList.svelte";
   import OutputPreview from "../components/OutputPreview.svelte";
+  import imageCompression from "../../node_modules/browser-image-compression/dist/browser-image-compression";
 
   let config: Config = $store.configs[$store.selectedConfigId];
 
@@ -33,6 +34,45 @@
       "*"
     );
   });
+
+const selectFormat = (format: PluginFormatTypes) => {
+  switch (format) {
+      case "WEBP":
+          return "image/webp";
+      case "PNG":
+          return "image/png";
+      case "JPEG":
+          return "image/jpeg";
+      case "JPG":
+          return "image/jpeg";
+  }
+};
+
+const resizeFile = async (
+  file: File,
+  type: "image/jpeg" | "image/png" | "image/webp",
+  maxFileSize: string,
+  quality: number,
+  iterations: number
+) => {
+  // console.log(file.name + " resizeFile() type ", type)
+  // console.log(file.name + " resizeFile() quality ", quality)
+  // console.log(file.name + " resizeFile() size before", file.size)
+  return await imageCompression(file, {
+      fileType: type,
+      maxSizeMB: parseFloat(maxFileSize),
+      alwaysKeepResolution: true,
+      initialQuality: quality * 0.01,
+      maxIteration: iterations,
+  })
+      .then(compressedFile => {
+        // console.log(file.name + " resizeFile() size after", compressedFile.size)
+          return compressedFile as File;
+      })
+      .catch(error => {
+          console.error(error.message);
+      });
+};
 
   window.onmessage = async (event: MessageEvent) => {
     const message = event.data.pluginMessage;
@@ -99,10 +139,41 @@
   const presentDownloadableArchive = async (assets: Asset[]) => {
     let zip = new JSZip();
 
-    assets.forEach((asset) => {
+    assets.forEach( (asset) => {
       const extensionLower = asset.extension.toLowerCase();
-      let blob = new Blob([asset.data], { type: `image/${extensionLower}` });
-      zip.file(`${asset.filename}.${extensionLower}`, blob, { base64: true });
+      const blob = new Blob([asset.data], { type: `image/${extensionLower}` }) as Blob;
+      // BUGBUG add compression here
+      // const blob = new Blob([img.data], {type: "image/png"}) as Blob;
+      const file = new File([blob], asset.filename, {type: `image/${extensionLower}`}) as File;
+      // console.log("asset.filename", asset.filename);
+      // console.log("asset.type", `image/${extensionLower}`);
+
+      let outputFile = file;
+
+      if (extensionLower === "svg" || extensionLower === "pdf" || extensionLower === "png") {
+        // outputFile = file;
+      } else {
+         outputFile = resizeFile(
+            file,
+            selectFormat(extensionLower.toUpperCase() as PluginFormatTypes),
+            // maxFileSize,
+            "1000",
+            // quality,
+            config.quality,
+            // iterations
+            10
+        );
+      }
+
+      
+      // console.log('imageCompression done blob: ', outputBlob.size);
+      // let outputFile = new File([outputBlob], asset.filename, {type: `image/${extensionLower}`}) as File;
+      // console.log('imageCompression done file: ', outputFile.size);
+
+      // // let outputFile = file;
+      // console.log(outputBlob);
+      // console.log(outputFile);
+      zip.file(`${asset.filename}.${extensionLower}`, outputFile, { base64: true });
     });
 
     const blob = await zip.generateAsync({ type: "blob" });
@@ -195,7 +266,7 @@
       class={"flex flex-1 flex-row items-center justify-between pl-4 pr-2 pointer-events-none " +
         (exportButtonDisabled ? "opacity-50 hover:opacity-60" : "opacity-80 hover:opacity-100")}
     >
-      <Button variant="secondary" weight="bold" >
+      <Button variant="secondary">
         {exportLoading ? `Please wait, exporting ${nodeCount} ${imageLabel}...` : `Export ${nodeCount} ${imageLabel}`}
         <Icon iconName={exportLoading ? IconSpinner : IconForward} spin={exportLoading ? true : false}/>
       </Button>

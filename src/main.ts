@@ -69,9 +69,11 @@ class TempFrame {
     }
 
     this.frame = figma.createFrame();
+    this.frame.x = figma.viewport.bounds.x-2000;
+    this.frame.y = figma.viewport.bounds.y-2000;
     this.frame.name = "[Machinas Frame Exporter]";
     this.frame.clipsContent = false;
-    this.frame = this.frame;
+    // this.frame = this.frame;
   };
 
   remove = () => {
@@ -139,6 +141,7 @@ const getExportPayload = async (
 
   let assets: Asset[] = [];
   let fileNameArray: string[] = [];
+  let filenameCollision: boolean = false;
 
   for (const e of exportables) {
     const asset: Asset = {
@@ -163,7 +166,7 @@ const getExportPayload = async (
     let variantsStr = "";
     e.variants.forEach((variant, i) => {
       if (!variant.value) {
-        console.error("Variant error:", variant);
+        log("Variant error:", variant);
         return;
       }
 
@@ -203,6 +206,7 @@ const getExportPayload = async (
     if (previewSettings.isFinal) {
       const payload = buildExportSettings(baseExportConfig);
       settings = payload.settings;
+      // console.log("Export settings: ", settings)
     } else {
       let displayPayload = buildExportSettings(baseExportConfig);
       asset.size = displayPayload.destSize;
@@ -248,8 +252,10 @@ const getExportPayload = async (
             tmpFileName = data;
           } else if (i==1) {
             tmpFileName = data + " copy";
+            filenameCollision = true;
           } else {
             tmpFileName = data + " copy " + i;
+            filenameCollision = true;
           }
           if (!(fileNameArray.includes(tmpFileName))) {
             nameExists = false;
@@ -287,18 +293,24 @@ const getExportPayload = async (
         // console.log("BUGBUG", asset.filename)
       }
     } else {
-      let error = "ERROR: Please make sure this node has exactly one child node called #Filename: " + e.parentName;
+      let error = "Please make sure that exactly one child node called #Filename exists in this asset: " + e.parentName;
+      figma.notify(error, {error: true});
       console.error(error);
-      figma.closePlugin(error);
+      // figma.closePlugin(error);
       return;
     }    
 
     assets.push(asset);
   }
+  // console.log("BUGBUG", filenameCollision);
+  // if (filenameCollision) {
+  //   let error = "Identical #Filename values detect, please correct: ideally in translations!"
+  //   figma.notify(error, {error: true});
+  // }
 
   tempFrame.remove();
 
-  return { nodeCount: exportables.length, hasVariants, layerModMatches, assets };
+  return { nodeCount: exportables.length, hasVariants, layerModMatches, assets};
 };
 
 const withLayerMods = (
@@ -323,7 +335,7 @@ const withLayerMods = (
     });
   }
 
-  log(`Matched ${layerMod.query} to ${matchedNodes.length} layers`);
+  // log(`Matched ${layerMod.query} to ${matchedNodes.length} layers`);
 
   if (!property || !value) {
     return { node, matchedNodeCount: matchedNodes.length };
@@ -359,7 +371,7 @@ const refreshPreview = (config: Config | undefined) => {
 const _refreshPreview = async (config: Config | undefined, limit: number = 20) => {
   const exportables = getExportables().slice(0, limit);
 
-  log("Exportables:", exportables);
+  // log("Exportables:", exportables);
 
   let exportPayload: ExportPayload | undefined;
   if (config) {

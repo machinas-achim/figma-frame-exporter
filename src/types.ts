@@ -11,6 +11,8 @@ export type Connectors = {
   after: string;
 };
 
+export type PluginFormatTypes = "WEBP" | "PNG" | "JPEG" | "JPG" | "SVG" | "PDF" ;
+
 export const casingStrings = [
   "original",
   "lower",
@@ -24,7 +26,7 @@ export const casingStrings = [
 ] as const;
 export type Casing = typeof casingStrings[number];
 
-export type Extension = "PNG" | "JPG" | "SVG" | "PDF";
+export type Extension = "PNG" | "JPG" | "SVG" | "PDF" | "WEBP";
 export type ConstraintType = "SCALE" | "WIDTH" | "HEIGHT";
 
 export const layerProperties = [
@@ -53,6 +55,7 @@ export interface ImageConfig {
   sizeConstraint: string;
   extension: Extension;
   suffix: boolean;
+  quality: string;
 }
 
 export interface LayerModConfig {

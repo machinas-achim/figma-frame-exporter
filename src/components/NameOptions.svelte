@@ -38,7 +38,6 @@
     </div>
 
     <Input
-      type="text"
       placeholder="Enter a syntax with $F for filename, $V for variants"
       bind:value={nameConfig.syntax}
       on:input={(e) => {
@@ -57,7 +56,6 @@
 
     <div class="flex flex-1 flex-row gap-2">
       <Input
-        type="text"
         placeholder="Before"
         bind:value={nameConfig.connectors.before}
         on:input={(e) => {
@@ -66,7 +64,6 @@
         }}
       />
       <Input
-        type="text"
         placeholder="Between"
         bind:value={nameConfig.connectors.between}
         on:input={(e) => {
@@ -75,7 +72,6 @@
         }}
       />
       <Input
-        type="text"
         placeholder="After"
         bind:value={nameConfig.connectors.after}
         on:input={(e) => {

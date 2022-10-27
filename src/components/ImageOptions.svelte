@@ -8,6 +8,7 @@
   let extensionOptions: ExtensionOption[] = [
     { value: "PNG", label: "PNG", group: null, selected: false },
     { value: "JPG", label: "JPG", group: null, selected: false },
+    { value: "WEBP", label: "WEBP", group: null, selected: false },
     { value: "SVG", label: "SVG", group: null, selected: false },
     { value: "PDF", label: "PDF", group: null, selected: false },
   ];
@@ -27,7 +28,6 @@
     <div class="flex flex-col">
       <Section>Image size</Section>
       <Input
-        type="text"
         placeholder="E.g. 2x, 64w, 200h"
         disabled={!imageConfig.extension || imageConfig.extension === "SVG" || imageConfig.extension === "PDF"}
         bind:value={imageConfig.sizeConstraint}
@@ -38,7 +38,7 @@
       />
     </div>
     <div class="flex flex-col">
-      <Section>File type</Section>
+      <Section>Format</Section>
       <SelectMenu
         bind:menuItems={extensionOptions}
         on:change={(e) => {
@@ -47,6 +47,19 @@
         }}
       />
     </div>
+    <div class="flex flex-col">
+      <Section>Export Quality</Section>
+      <Input
+        placeholder="1–100, higher=better"
+        disabled={!imageConfig.extension || imageConfig.extension === "SVG" || imageConfig.extension === "PDF" || imageConfig.extension === "PNG"}
+        bind:value={imageConfig.quality}
+        on:input={(e) => {
+          imageConfig.quality = e.target["value"];
+          _onChangeConfig();
+        }}
+      />
+    </div>
+
   </div>
   <div class="flex flex-row">
     <Checkbox

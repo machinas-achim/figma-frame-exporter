@@ -20,6 +20,7 @@
       `${config.syntax}`,
       config.sizeConstraint,
       config.suffix,
+      config.quality,
     ];
 
     if (config.layerMods.length > 0) {
@@ -77,7 +78,7 @@
         {/each}
       </div>
       <div class="flex flex-row space-x-2">
-        <Button disabled={isActive} purpose="submit" variant="secondary">
+        <Button disabled={isActive} variant="secondary">
           <div
             class={"flex w-fit cursor-pointer " + (isActive ? "text-green-900" : "")}
             on:click={onSelectActivate}
@@ -85,7 +86,7 @@
             {isActive ? "Active" : "Activate"}
           </div>
         </Button>
-        <Button purpose="submit" variant="secondary">
+        <Button variant="secondary">
           <div
             class={"flex w-fit  cursor-pointer"}
             on:click={() => (isEditingName = true)}
@@ -93,7 +94,7 @@
             Edit name
           </div>
         </Button>
-        <Button purpose="submit" variant="secondary">
+        <Button variant="secondary">
           <div class={"flex w-fit  cursor-pointer"} on:click={onSelectDuplicate}>
             Duplicate
           </div>

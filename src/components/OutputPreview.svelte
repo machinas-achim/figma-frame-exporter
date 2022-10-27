@@ -2,12 +2,11 @@
   import { Section, Type } from "figma-plugin-ds-svelte";
   import { Asset, Size } from "../types";
   import Divider from "./Divider.svelte";
-  import { placeHolderImage } from "utils";
   import EmptyText from "./EmptyText.svelte";
 
 
   export let exampleAssets: Asset[];
-
+  let textHolder: string = "sdfsdfsdf";
   const displaySize = (size: Size): string => {
     const rounded: Size = {
       width: Math.round(size.width),
@@ -22,6 +21,14 @@
   <div class="section-subtitle">
     <Type>Examples of output image files will appear below.</Type>
   </div>
+  <div class="section-subtitle">
+    <Type
+    bind:characters={textHolder}
+    />
+  </div>
+
+
+
   <div class="mt-2 px-2">
     {#if exampleAssets.length > 0}
       {#each exampleAssets as exampleAsset, index}

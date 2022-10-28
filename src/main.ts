@@ -11,7 +11,7 @@ import {
 } from "./types";
 import { withCasing, buildExportSettings, log, buildDefaultConfig } from "./utils";
 
-figma.showUI(__html__, { width: 360, height: 900, themeColors: true });
+figma.showUI(__html__, { width: 360, height: 700, themeColors: true });
 
 // Store.
 

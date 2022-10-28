@@ -6,7 +6,12 @@
 @layer base {
   body {
     @apply text-sm;
+    background-color: var(--figma-color-bg);
+    color: var(--figma-color-text);
   }
+
+  html { scroll-behavior: smooth; }
+    
   a {
     @apply text-blue-500 hover:text-blue-400;
   }
